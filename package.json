@@ -1,0 +1,86 @@
+{
+  "name": "tdtool-less",
+  "version": "0.0.1",
+  "description": "tdtool less extension",
+  "main": "lib/index.js",
+  "repository": "https://github.com/tdtool/tdtool-less.git",
+  "author": "zhengfeng.yao",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib",
+    "build": "npm run clean && echo Using Babel && babel --version && babel src --out-dir lib -s",
+    "test": "npm run build && mocha --recursive 'test/**/*-spec.js'",
+    "test:report": "npm run test && open mochawesome-reports/mochawesome.html",
+    "coverage": "nyc --reporter=text --reporter=html --reporter=lcov mocha",
+    "coverage:report": "npm run coverage && open coverage/index.html"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-2"
+    ],
+    "plugins": [
+      "babel-plugin-transform-decorators-legacy",
+      "babel-plugin-transform-class-properties",
+      "babel-plugin-transform-runtime"
+    ]
+  },
+  "nyc": {
+    "watermarks": {
+      "lines": [
+        65,
+        80
+      ],
+      "branches": [
+        55,
+        70
+      ]
+    },
+    "include": [
+      "src/*.js",
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "lib",
+      "mochawesome-report"
+    ],
+    "extension": [
+      ".js"
+    ],
+    "require": [
+      "babel-core/register"
+    ],
+    "reporter": [],
+    "all": true
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "chai": "^3.5.0",
+    "coveralls": "^2.13.1",
+    "mocha": "^3.3.0",
+    "mochawesome": "^2.1.0",
+    "nyc": "^10.3.0",
+    "rimraf": "^2.6.1"
+  },
+  "dependencies": {
+    "autoprefixer": "^6.7.7",
+    "css-loader": "^0.28.1",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "file-loader": "^0.11.1",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.3",
+    "pixrem": "^3.0.2",
+    "postcss-discard-duplicates": "^2.1.0",
+    "postcss-flexibility": "^1.1.1",
+    "postcss-loader": "^1.3.3",
+    "postcss-nested": "^1.0.1",
+    "style-loader": "^0.17.0",
+    "url-loader": "^0.5.8",
+    "webpack": "^2.4.1"
+  }
+}

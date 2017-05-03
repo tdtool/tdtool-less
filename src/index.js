@@ -19,7 +19,60 @@ function loadTheme(theme) {
   return null
 }
 
+const URL_LOADER_LIMIT = 10000
+
+function staticLoader(config, options) {
+  config.add('rule.txt', {
+    test: /\.txt$/,
+    loader: 'raw-loader'
+  })
+  config.add('rule.woff', {
+    test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url-loader',
+    query: {
+      limit: options && options.urlLoaderLimit ? options.urlLoaderLimit : URL_LOADER_LIMIT,
+      minetype: 'application/font-woff'
+    }
+  })
+  config.add('rule.woff2', {
+    test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url-loader',
+    query: {
+      limit: options && options.urlLoaderLimit ? options.urlLoaderLimit : URL_LOADER_LIMIT,
+      minetype: 'application/font-woff'
+    }
+  })
+  config.add('rule.ttf', {
+    test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url-loader',
+    query: {
+      limit: options && options.urlLoaderLimit ? options.urlLoaderLimit : URL_LOADER_LIMIT,
+      minetype: 'application/octet-stream'
+    }
+  })
+  config.add('rule.eot', {
+    test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'file-loader'
+  })
+  config.add('rule.svg', {
+    test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url-loader',
+    query: {
+      limit: options && options.urlLoaderLimit ? options.urlLoaderLimit : URL_LOADER_LIMIT,
+      minetype: 'image/svg+xml'
+    }
+  })
+  config.add('rule.IMAGE', {
+    test: /\.(png|jpg|jpeg|gif)(\?v=\d+\.\d+\.\d+)?$/i,
+    loader: 'url-loader',
+    query: {
+      limit: options && options.urlLoaderLimit ? options.urlLoaderLimit : URL_LOADER_LIMIT
+    }
+  })
+}
+
 module.exports = (config, options) => {
+  staticLoader(config, options)
   const cssLoader = {
     loader: `css-loader${is.Object(options) && options.target === 'node' ? '/locals' : ''}`,
     options: {

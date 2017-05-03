@@ -50,7 +50,8 @@ describe('index', () => {
     const configObj = new Config()
     extend(configObj, {
       extractCss: true,
-      postCss: true
+      postCss: true,
+      urlLoaderLimit: 5 * 1024
     })
     expect(configObj.config['plugin.ExtractText']).to.not.be.undefined
     expect(configObj.config['rule.css'].use.slice(-1)[0].options.plugins().length).to.equal(5)

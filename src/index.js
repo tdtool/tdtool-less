@@ -41,13 +41,7 @@ module.exports = (config, options) => {
           require('postcss-nested')(),
           require('pixrem')(),
           require('autoprefixer')(is.Object(options) && is.Object(options.autoprefixer) ? options.autoprefixer : {
-            browsers: [
-              'Chrome >= 35',
-              'Firefox >= 31',
-              'Explorer >= 9',
-              'Opera >= 12',
-              'Safari >= 7.1'
-            ]
+            browsers: ['last 2 versions', 'Firefox ESR', '> 1%', 'ie >= 8']
           }),
           require('postcss-flexibility')(),
           require('postcss-discard-duplicates')()

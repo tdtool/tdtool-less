@@ -1,6 +1,6 @@
 {
   "name": "tdtool-less",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "tdtool less extension",
   "main": "lib/index.js",
   "repository": "https://github.com/tdtool/tdtool-less.git",
@@ -71,6 +71,7 @@
     "autoprefixer": "^6.7.7",
     "css-loader": "^0.28.1",
     "extract-text-webpack-plugin": "^2.1.0",
+    "isomorphic-style-loader": "^2.0.0",
     "less": "^2.7.2",
     "less-loader": "^4.0.3",
     "pixrem": "^3.0.2",

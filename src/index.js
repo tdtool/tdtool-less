@@ -57,6 +57,27 @@ module.exports = (config, options) => {
     }
   }
 
+  if (options && options.withStyle) {
+    config.add('rule.less', {
+      test: /\.less$/,
+      use: [
+        'isomorphic-style-loader',
+        cssLoader,
+        postcssLoader,
+        lessLoader
+      ]
+    })
+    config.add('rule.css', {
+      test: /\.css$/,
+      use: [
+        'isomorphic-style-loader',
+        cssLoader,
+        postcssLoader
+      ]
+    })
+    return;
+  }
+
   if (is.Object(options) && options.target === 'node') {
     config.add('rule.less', {
       test: /\.less$/,

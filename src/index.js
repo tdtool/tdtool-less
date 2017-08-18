@@ -6,6 +6,7 @@
  */
 
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 
 import is from './is'
 
@@ -56,6 +57,13 @@ module.exports = (config, options) => {
       modifyVars: is.Object(options) ? loadTheme(options.theme) : null
     }
   }
+
+  config.add('plugin.OptimizeCssAssetsPlugin', new OptimizeCssAssetsPlugin({
+    cssProcessorOptions: {
+      discardComments: { removeAll: true },
+      safe: true
+    }
+  }))
 
   if (options && options.withStyle) {
     config.add('rule.less', {

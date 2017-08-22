@@ -105,7 +105,7 @@ module.exports = (config, options) => {
     return
   }
   if (is.Object(options) && !!options.extractCss) {
-    config.add('plugin.ExtractText', new ExtractTextPlugin(is.String(options.extractCss) ? options.extractCss : '[name].css'))
+    config.add('plugin.ExtractText', new ExtractTextPlugin((is.String(options.extractCss) || is.Object(options.extractCss)) ? options.extractCss : '[name].css'))
     config.add('rule.less', {
       test: /\.less$/,
       use: ExtractTextPlugin.extract({

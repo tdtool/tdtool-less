@@ -1,6 +1,6 @@
 {
   "name": "tdtool-less",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "tdtool less extension",
   "main": "lib/index.js",
   "repository": "https://github.com/tdtool/tdtool-less.git",

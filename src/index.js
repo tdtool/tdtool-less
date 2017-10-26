@@ -7,8 +7,10 @@
 
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin'
-
+import path from 'path'
 import is from './is'
+import fs from 'fs'
+const pkg = require('../package.json')
 
 function loadTheme(theme) {
   if (is.String(theme)) {
@@ -19,7 +21,21 @@ function loadTheme(theme) {
   }
   return null
 }
-
+const HappyPack = require('happypack');
+const os = require('os');
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
+function addHappyLoader(config, test ,name, loaders) {
+  config.add(`rule.${name}`, {
+    test,
+    loader: `HappyPack/loader?id=${name}Happy`,
+  });
+  config.add(`plugins.${name}Happy`, new HappyPack({
+    id: `${name}Happy`,
+    cache: true,
+    threadPool: happyThreadPool,
+    loaders
+  }))
+}
 module.exports = (config, options) => {
   const cssLoader = {
     loader: `css-loader${is.Object(options) && options.target === 'node' ? '/locals' : ''}`,
@@ -31,7 +47,7 @@ module.exports = (config, options) => {
       discardComments: { removeAll: true }
     }
   }
-  const postcssLoader = {
+  let postcssLoader = {
     loader: 'postcss-loader',
     options: {
       plugins: () => {
@@ -50,6 +66,14 @@ module.exports = (config, options) => {
       }
     }
   }
+
+  if (options.happlyPack) {
+    postcssLoader.options.path = options.happlyPack.postcssPath || process.cwd();
+    if (!fs.existsSync(path.join(postcssLoader.options.path, 'postcss.config.js'))) {
+      throw ('Can’t find postcss.config.js. Happypack must use postcss configuration file ');
+      process.exit(1);
+    }
+  }
   const lessLoader = {
     loader: 'less-loader',
     options: {
@@ -65,86 +89,165 @@ module.exports = (config, options) => {
     }
   }))
 
+
   if (options && options.withStyle) {
-    config.add('rule.less', {
-      test: /\.less$/,
-      use: [
+    if (options.happlyPack) {
+      addHappyLoader(config, /\.less$/ , 'less', [
         'isomorphic-style-loader',
         cssLoader,
         postcssLoader,
         lessLoader
-      ]
-    })
-    config.add('rule.css', {
-      test: /\.css$/,
-      use: [
+      ])
+      addHappyLoader(config, /\.css$/, 'css', [
         'isomorphic-style-loader',
         cssLoader,
         postcssLoader
-      ]
-    })
+      ])
+    } else {
+      config.add('rule.less', {
+        test: /\.less$/,
+        use: [
+          'isomorphic-style-loader',
+          cssLoader,
+          postcssLoader,
+          lessLoader
+        ]
+      })
+      config.add('rule.css', {
+        test: /\.css$/,
+        use: [
+          'isomorphic-style-loader',
+          cssLoader,
+          postcssLoader
+        ]
+      })
+    }
     return;
   }
 
   if (is.Object(options) && options.target === 'node') {
-    config.add('rule.less', {
-      test: /\.less$/,
-      use: [
+    if (options.happlyPack) {
+      addHappyLoader(config, /\.less$/ , 'less', [
         cssLoader,
         postcssLoader,
         lessLoader
-      ]
-    })
-    config.add('rule.css', {
-      test: /\.css$/,
-      use: [
+      ])
+      addHappyLoader(config, /\.css/ , 'css', [
         cssLoader,
         postcssLoader
-      ]
-    })
-    return
-  }
-  if (is.Object(options) && !!options.extractCss) {
-    config.add('plugin.ExtractText', new ExtractTextPlugin((is.String(options.extractCss) || is.Object(options.extractCss)) ? options.extractCss : '[name].css'))
-    config.add('rule.less', {
-      test: /\.less$/,
-      use: ExtractTextPlugin.extract({
-        fallback: 'style-loader',
+      ])
+    } else {
+      config.add('rule.less', {
+        test: /\.less$/,
         use: [
           cssLoader,
           postcssLoader,
           lessLoader
         ]
       })
-    })
-    config.add('rule.css', {
-      test: /\.css$/,
-      use: ExtractTextPlugin.extract({
-        fallback: 'style-loader',
+      config.add('rule.css', {
+        test: /\.css$/,
         use: [
           cssLoader,
           postcssLoader
         ]
       })
-    })
+    }
     return
   }
+  if (is.Object(options) && !!options.extractCss) {
+    config.add('plugin.ExtractText', new ExtractTextPlugin((is.String(options.extractCss) || is.Object(options.extractCss)) ? options.extractCss : '[name].css'))
+    if (options.happlyPack) {
 
-  config.add('rule.less', {
-    test: /\.less$/,
-    use: [
+      config.add('rule.less', {
+        test: /\.less$/,
+        loader: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: 'happypack/loader?id=lessHappy'
+        })
+      })
+
+      config.add('plugins.lessHappy', new HappyPack({
+        id: 'lessHappy',
+        loaders: [
+          cssLoader,
+          postcssLoader,
+          lessLoader
+        ],
+        threadPool: happyThreadPool,
+        cache: true,
+      }))
+
+      config.add('rule.css', {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: 'happypack/loader?id=cssHappy'
+        })
+      })
+      config.add('plugins.cssHappy', new HappyPack({
+        id: 'cssHappy',
+        loaders: [
+          cssLoader,
+          postcssLoader
+        ],
+        threadPool: happyThreadPool,
+        cache: true,
+      }))
+    } else {
+      config.add('rule.less', {
+        test: /\.less$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            cssLoader,
+            postcssLoader,
+            lessLoader
+          ]
+        })
+      })
+      config.add('rule.css', {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            cssLoader,
+            postcssLoader
+          ]
+        })
+      })
+    }
+    return
+  }
+  if (options.happlyPack) {
+    addHappyLoader(config, /\.less$/ , 'less', [
       'style-loader',
       cssLoader,
       postcssLoader,
       lessLoader
-    ]
-  })
-  config.add('rule.css', {
-    test: /\.css$/,
-    use: [
+    ])
+    addHappyLoader(config, /\.css/ , 'css', [
       'style-loader',
       cssLoader,
       postcssLoader
-    ]
-  })
+    ])
+  } else {
+    config.add('rule.less', {
+      test: /\.less$/,
+      use: [
+        'style-loader',
+        cssLoader,
+        postcssLoader,
+        lessLoader
+      ]
+    })
+    config.add('rule.css', {
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        cssLoader,
+        postcssLoader
+      ]
+    })
+  }
 }

@@ -31,7 +31,6 @@ function addHappyLoader(config, test ,name, loaders) {
   });
   config.add(`plugins.${name}Happy`, new HappyPack({
     id: `${name}Happy`,
-    cache: true,
     threadPool: happyThreadPool,
     loaders
   }))
@@ -67,10 +66,10 @@ module.exports = (config, options) => {
     }
   }
 
-  if (options.happlyPack) {
-    postcssLoader.options.path = options.happlyPack.postcssPath || process.cwd();
+  if (options.happypack) {
+    postcssLoader.options.path = options.happypack.postcssPath || process.cwd();
     if (!fs.existsSync(path.join(postcssLoader.options.path, 'postcss.config.js'))) {
-      throw ('Can’t find postcss.config.js. Happypack must use postcss configuration file ');
+      throw new Error('Can’t find postcss.config.js. Happypack must use postcss configuration file ');
       process.exit(1);
     }
   }
@@ -91,7 +90,7 @@ module.exports = (config, options) => {
 
 
   if (options && options.withStyle) {
-    if (options.happlyPack) {
+    if (options.happypack) {
       addHappyLoader(config, /\.less$/ , 'less', [
         'isomorphic-style-loader',
         cssLoader,
@@ -126,7 +125,7 @@ module.exports = (config, options) => {
   }
 
   if (is.Object(options) && options.target === 'node') {
-    if (options.happlyPack) {
+    if (options.happypack) {
       addHappyLoader(config, /\.less$/ , 'less', [
         cssLoader,
         postcssLoader,
@@ -155,10 +154,9 @@ module.exports = (config, options) => {
     }
     return
   }
-  if (is.Object(options) && !!options.extractCss) {
+  if (is.Object(options)) {
     config.add('plugin.ExtractText', new ExtractTextPlugin((is.String(options.extractCss) || is.Object(options.extractCss)) ? options.extractCss : '[name].css'))
-    if (options.happlyPack) {
-
+    if (options.happypack) {
       config.add('rule.less', {
         test: /\.less$/,
         loader: ExtractTextPlugin.extract({
@@ -174,8 +172,7 @@ module.exports = (config, options) => {
           postcssLoader,
           lessLoader
         ],
-        threadPool: happyThreadPool,
-        cache: true,
+        threadPool: happyThreadPool
       }))
 
       config.add('rule.css', {
@@ -191,8 +188,7 @@ module.exports = (config, options) => {
           cssLoader,
           postcssLoader
         ],
-        threadPool: happyThreadPool,
-        cache: true,
+        threadPool: happyThreadPool
       }))
     } else {
       config.add('rule.less', {
@@ -219,7 +215,7 @@ module.exports = (config, options) => {
     }
     return
   }
-  if (options.happlyPack) {
+  if (options.happypack) {
     addHappyLoader(config, /\.less$/ , 'less', [
       'style-loader',
       cssLoader,

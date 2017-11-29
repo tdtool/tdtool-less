@@ -10,6 +10,7 @@ import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import path from 'path'
 import is from './is'
 import fs from 'fs'
+import { getPostCssOptions } from './postcss.config'
 const pkg = require('../package.json')
 
 function loadTheme(theme) {
@@ -27,7 +28,8 @@ const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 function addHappyLoader(config, test ,name, loaders) {
   config.add(`rule.${name}`, {
     test,
-    loader: `HappyPack/loader?id=${name}Happy`,
+    loader: `HappyPack/loader`,
+    query: {id: `${name}Happy`}
   });
   config.add(`plugins.${name}Happy`, new HappyPack({
     id: `${name}Happy`,
@@ -48,30 +50,10 @@ module.exports = (config, options) => {
   }
   let postcssLoader = {
     loader: 'postcss-loader',
-    options: {
-      plugins: () => {
-        if (is.Object(options) && is.Array(options.postCss)) {
-          return options.postCss
-        }
-        return [
-          require('postcss-nested')(),
-          require('pixrem')(),
-          require('autoprefixer')(is.Object(options) && is.Object(options.autoprefixer) ? options.autoprefixer : {
-            browsers: ['last 2 versions', 'Firefox ESR', '> 1%', 'ie >= 8']
-          }),
-          require('postcss-flexibility')(),
-          require('postcss-discard-duplicates')()
-        ]
-      }
-    }
+    options: getPostCssOptions(options)
   }
-
   if (options.happypack) {
-    postcssLoader.options.path = options.happypack.postcssPath || process.cwd();
-    if (!fs.existsSync(path.join(postcssLoader.options.path, 'postcss.config.js'))) {
-      throw new Error('Can’t find postcss.config.js. Happypack must use postcss configuration file ');
-      process.exit(1);
-    }
+    postcssLoader.options.config = options.happypack.postcssPath || __dirname;
   }
   const lessLoader = {
     loader: 'less-loader',

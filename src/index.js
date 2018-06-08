@@ -28,7 +28,7 @@ const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 function addHappyLoader(config, test ,name, loaders) {
   config.add(`rule.${name}`, {
     test,
-    loader: `HappyPack/loader`,
+    loader: 'happypack/loader',
     query: {id: `${name}Happy`}
   });
   config.add(`plugins.${name}Happy`, new HappyPack({
@@ -37,14 +37,14 @@ function addHappyLoader(config, test ,name, loaders) {
     loaders
   }))
 }
-module.exports = (config, options) => {
+exports.load = (config, options, wbpConfig) => {
   const cssLoader = {
     loader: `css-loader${is.Object(options) && options.target === 'node' ? '/locals' : ''}`,
     options: {
       sourceMap: is.Object(options) && !!options.sourceMap,
       modules: true,
       localIdentName: '[local]',
-      minimize: is.Object(options) && options.target !== 'node' && !!options.minimize,
+      minimize: is.Object(options) && options.target !== 'node' && !!options.minimize || wbpConfig.optimization.minimize,
       discardComments: { removeAll: true }
     }
   }
@@ -52,7 +52,7 @@ module.exports = (config, options) => {
     loader: 'postcss-loader',
     options: getPostCssOptions(options)
   }
-  if (options.happypack) {
+  if (options && options.happypack) {
     postcssLoader.options.config = options.happypack.postcssPath || __dirname;
   }
   const lessLoader = {
@@ -138,7 +138,7 @@ module.exports = (config, options) => {
   }
   if (is.Object(options)) {
     config.add('plugin.ExtractText', new ExtractTextPlugin((is.String(options.extractCss) || is.Object(options.extractCss)) ? options.extractCss : '[name].css'))
-    if (options.happypack) {
+    if (options && options.happypack) {
       config.add('rule.less', {
         test: /\.less$/,
         loader: ExtractTextPlugin.extract({
@@ -197,7 +197,7 @@ module.exports = (config, options) => {
     }
     return
   }
-  if (options.happypack) {
+  if (options && options.happypack) {
     addHappyLoader(config, /\.less$/ , 'less', [
       'style-loader',
       cssLoader,

@@ -1,6 +1,6 @@
 {
   "name": "tdtool-less",
-  "version": "0.1.3",
+  "version": "1.0.0-alpha.0",
   "description": "tdtool less extension",
   "main": "lib/index.js",
   "repository": "https://github.com/tdtool/tdtool-less.git",
@@ -62,7 +62,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^3.5.0",
     "coveralls": "^2.13.1",
-    "happypack": "^4.0.0",
+    "happypack": "^5.0.0-beta.4",
     "mocha": "^3.3.0",
     "mochawesome": "^2.1.0",
     "nyc": "^10.3.0",
@@ -71,7 +71,7 @@
   "dependencies": {
     "autoprefixer": "^6.7.7",
     "css-loader": "^0.28.1",
-    "extract-text-webpack-plugin": "^2.1.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "isomorphic-style-loader": "^2.0.0",
     "less": "^2.7.2",
     "less-loader": "^4.0.3",
@@ -82,6 +82,6 @@
     "postcss-loader": "^1.3.3",
     "postcss-nested": "^1.0.1",
     "style-loader": "^0.17.0",
-    "webpack": "^2.4.1"
+    "webpack": "^4.11.1"
   }
 }

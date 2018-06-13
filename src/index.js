@@ -5,8 +5,8 @@
  * @Last modified time: 2017-05-03 15:55:49
  */
 
-import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path'
 import is from './is'
 import fs from 'fs'
@@ -80,7 +80,7 @@ exports.load = (config, options, wbpConfig) => {
 
 
   if (options && options.withStyle) {
-    if (options.happypack) {
+    if (options.happypack !== undefined) {
       addHappyLoader(config, /\.less$/ , 'less', [
         'isomorphic-style-loader',
         cssLoader,
@@ -115,7 +115,7 @@ exports.load = (config, options, wbpConfig) => {
   }
 
   if (is.Object(options) && options.target === 'node') {
-    if (options.happypack) {
+    if (options.happypack !== undefined) {
       addHappyLoader(config, /\.less$/ , 'less', [
         cssLoader,
         postcssLoader,
@@ -145,14 +145,17 @@ exports.load = (config, options, wbpConfig) => {
     return
   }
   if (is.Object(options)) {
-    config.add('plugin.ExtractText', new ExtractTextPlugin((is.String(options.extractCss) || is.Object(options.extractCss)) ? options.extractCss : '[name].css'))
-    if (options && options.happypack) {
+    config.add('plugin.MiniCssExtractPlugin', new MiniCssExtractPlugin(is.Object(options.extractCss) ? {
+      filename: options.extractCss.filename || '[name].css',
+      chunkFilename: options.extractCss.chunkFilename || '[id].css'
+    } : {
+      filename: is.String(options.extractCss) ? options.extractCss : '[name].css',
+      chunkFilename: "[id].css"
+    }))
+    if (options && options.happypack !== undefined) {
       config.add('rule.less', {
         test: /\.less$/,
-        loader: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'happypack/loader?id=lessHappy'
-        })
+        loader: [MiniCssExtractPlugin.loader, 'happypack/loader?id=lessHappy']
       })
 
       config.add('plugins.lessHappy', new HappyPack({
@@ -167,10 +170,7 @@ exports.load = (config, options, wbpConfig) => {
 
       config.add('rule.css', {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'happypack/loader?id=cssHappy'
-        })
+        loader: [MiniCssExtractPlugin.loader, 'happypack/loader?id=cssHappy']
       })
       config.add('plugins.cssHappy', new HappyPack({
         id: 'cssHappy',
@@ -183,29 +183,25 @@ exports.load = (config, options, wbpConfig) => {
     } else {
       config.add('rule.less', {
         test: /\.less$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            cssLoader,
-            postcssLoader,
-            lessLoader
-          ]
-        })
+        use: [
+          MiniCssExtractPlugin.loader,
+          cssLoader,
+          postcssLoader,
+          lessLoader
+        ]
       })
       config.add('rule.css', {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            cssLoader,
-            postcssLoader
-          ]
-        })
+        use: [
+          MiniCssExtractPlugin.loader,
+          cssLoader,
+          postcssLoader
+        ]
       })
     }
     return
   }
-  if (options && options.happypack) {
+  if (options && options.happypack !== undefined) {
     addHappyLoader(config, /\.less$/ , 'less', [
       'style-loader',
       cssLoader,

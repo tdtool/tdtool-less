@@ -52,23 +52,31 @@ exports.load = (config, options, wbpConfig) => {
     loader: 'postcss-loader',
     options: getPostCssOptions(options)
   }
-  if (options && options.happypack) {
-    postcssLoader.options.config = options.happypack.postcssPath || __dirname;
-  }
+  postcssLoader.options.config = {
+    path: options.postcssPath || __dirname
+  };
   const lessLoader = {
     loader: 'less-loader',
     options: {
       sourceMap: is.Object(options) && !!options.sourceMap,
-      modifyVars: is.Object(options) ? loadTheme(options.theme) : null
+      modifyVars: is.Object(options) ? loadTheme(options.theme) : null,
+      javascriptEnabled: true
     }
   }
-
-  config.add('plugin.OptimizeCssAssetsPlugin', new OptimizeCssAssetsPlugin({
-    cssProcessorOptions: {
-      discardComments: { removeAll: true },
-      safe: true
-    }
-  }))
+  wbpConfig.optimization.minimizer = (wbpConfig.optimization.minimizer || []).concat([
+    new OptimizeCssAssetsPlugin({
+      cssProcessor: require('cssnano'),
+      cssProcessorOptions: { discardComments: { removeAll: true } },
+      canPrint: true
+    })
+  ])
+  
+  // config.add('plugin.OptimizeCssAssetsPlugin', new OptimizeCssAssetsPlugin({
+  //   cssProcessorOptions: {
+  //     discardComments: { removeAll: true },
+  //     safe: true
+  //   }
+  // }))
 
 
   if (options && options.withStyle) {

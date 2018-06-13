@@ -147,10 +147,10 @@ exports.load = (config, options, wbpConfig) => {
   if (is.Object(options)) {
     config.add('plugin.MiniCssExtractPlugin', new MiniCssExtractPlugin(is.Object(options.extractCss) ? {
       filename: options.extractCss.filename || '[name].css',
-      chunkFilename: options.extractCss.chunkFilename || '[id].css'
+      // chunkFilename: options.extractCss.chunkFilename || '[id].css'
     } : {
       filename: is.String(options.extractCss) ? options.extractCss : '[name].css',
-      chunkFilename: "[id].css"
+      // chunkFilename: "[id].css"
     }))
     if (options && options.happypack !== undefined) {
       config.add('rule.less', {

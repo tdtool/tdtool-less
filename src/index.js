@@ -66,18 +66,17 @@ exports.load = (config, options, wbpConfig) => {
   wbpConfig.optimization.minimizer = (wbpConfig.optimization.minimizer || []).concat([
     new OptimizeCssAssetsPlugin({
       cssProcessor: require('cssnano'),
-      cssProcessorOptions: { discardComments: { removeAll: true } },
+      cssProcessorOptions: {
+        discardComments: {
+          removeAll: true
+        },
+        autoprefixer: false, // 取消css前缀，postcss已添加有
+        reduceIdents: false, // 取消@keyframes动画被改名
+        zIndex: false // 取消重新计算zIndex
+      },
       canPrint: true
     })
   ])
-  
-  // config.add('plugin.OptimizeCssAssetsPlugin', new OptimizeCssAssetsPlugin({
-  //   cssProcessorOptions: {
-  //     discardComments: { removeAll: true },
-  //     safe: true
-  //   }
-  // }))
-
 
   if (options && options.withStyle) {
     if (options.happypack !== undefined) {

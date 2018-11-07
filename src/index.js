@@ -38,6 +38,9 @@ function addHappyLoader(config, test ,name, loaders) {
   }))
 }
 exports.load = (config, options, wbpConfig) => {
+
+  const isHappy = options && options.happypack === true;
+
   const cssLoader = {
     loader: `css-loader${is.Object(options) && options.target === 'node' ? '/locals' : ''}`,
     options: {
@@ -79,7 +82,7 @@ exports.load = (config, options, wbpConfig) => {
   ])
 
   if (options && options.withStyle) {
-    if (options.happypack !== undefined) {
+    if (isHappy) {
       addHappyLoader(config, /\.less$/ , 'less', [
         'isomorphic-style-loader',
         cssLoader,
@@ -114,7 +117,7 @@ exports.load = (config, options, wbpConfig) => {
   }
 
   if (is.Object(options) && options.target === 'node') {
-    if (options.happypack !== undefined) {
+    if (isHappy) {
       addHappyLoader(config, /\.less$/ , 'less', [
         cssLoader,
         postcssLoader,
@@ -151,7 +154,7 @@ exports.load = (config, options, wbpConfig) => {
       filename: is.String(options.extractCss) ? options.extractCss : '[name].css',
       // chunkFilename: "[id].css"
     }))
-    if (options && options.happypack !== undefined) {
+    if (isHappy) {
       config.add('rule.less', {
         test: /\.less$/,
         loader: [MiniCssExtractPlugin.loader, 'happypack/loader?id=lessHappy']
@@ -200,7 +203,7 @@ exports.load = (config, options, wbpConfig) => {
     }
     return
   }
-  if (options && options.happypack !== undefined) {
+  if (isHappy) {
     addHappyLoader(config, /\.less$/ , 'less', [
       'style-loader',
       cssLoader,

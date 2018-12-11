@@ -1,6 +1,6 @@
 {
   "name": "tdtool-less",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "tdtool less extension",
   "main": "lib/index.js",
   "repository": "https://github.com/tdtool/tdtool-less.git",
@@ -82,8 +82,7 @@
     "postcss-flexibility": "^2.0.0",
     "postcss-loader": "^2.1.5",
     "postcss-nested": "^1.0.1",
-    "style-loader": "^0.17.0",
-    "webpack": "^4.16.0"
+    "style-loader": "^0.17.0"
   },
   "peerDependencies": {
     "happypack": "^5.0.0",

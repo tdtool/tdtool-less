@@ -40,6 +40,8 @@ function addHappyLoader(config, test ,name, loaders) {
 exports.load = (config, options, wbpConfig) => {
 
   const isHappy = options && options.happypack === true;
+  const exclude = options ? options.exclude : undefined;
+  const include = options ? options.include : undefined;
 
   const cssLoader = {
     loader: `css-loader${is.Object(options) && options.target === 'node' ? '/locals' : ''}`,
@@ -97,6 +99,8 @@ exports.load = (config, options, wbpConfig) => {
     } else {
       config.add('rule.less', {
         test: /\.less$/,
+        include,
+        exclude,
         use: [
           'isomorphic-style-loader',
           cssLoader,
@@ -106,6 +110,8 @@ exports.load = (config, options, wbpConfig) => {
       })
       config.add('rule.css', {
         test: /\.css$/,
+        include,
+        exclude,
         use: [
           'isomorphic-style-loader',
           cssLoader,
@@ -130,6 +136,8 @@ exports.load = (config, options, wbpConfig) => {
     } else {
       config.add('rule.less', {
         test: /\.less$/,
+        include,
+        exclude,
         use: [
           cssLoader,
           postcssLoader,
@@ -138,6 +146,8 @@ exports.load = (config, options, wbpConfig) => {
       })
       config.add('rule.css', {
         test: /\.css$/,
+        include,
+        exclude,
         use: [
           cssLoader,
           postcssLoader
@@ -157,6 +167,8 @@ exports.load = (config, options, wbpConfig) => {
     if (isHappy) {
       config.add('rule.less', {
         test: /\.less$/,
+        include,
+        exclude,
         loader: [MiniCssExtractPlugin.loader, 'happypack/loader?id=lessHappy']
       })
 
@@ -172,6 +184,8 @@ exports.load = (config, options, wbpConfig) => {
 
       config.add('rule.css', {
         test: /\.css$/,
+        include,
+        exclude,
         loader: [MiniCssExtractPlugin.loader, 'happypack/loader?id=cssHappy']
       })
       config.add('plugins.cssHappy', new HappyPack({
@@ -185,6 +199,8 @@ exports.load = (config, options, wbpConfig) => {
     } else {
       config.add('rule.less', {
         test: /\.less$/,
+        include,
+        exclude,
         use: [
           MiniCssExtractPlugin.loader,
           cssLoader,
@@ -194,6 +210,8 @@ exports.load = (config, options, wbpConfig) => {
       })
       config.add('rule.css', {
         test: /\.css$/,
+        include,
+        exclude,
         use: [
           MiniCssExtractPlugin.loader,
           cssLoader,
@@ -218,6 +236,8 @@ exports.load = (config, options, wbpConfig) => {
   } else {
     config.add('rule.less', {
       test: /\.less$/,
+      include,
+      exclude,
       use: [
         'style-loader',
         cssLoader,
@@ -227,6 +247,8 @@ exports.load = (config, options, wbpConfig) => {
     })
     config.add('rule.css', {
       test: /\.css$/,
+      include,
+      exclude,
       use: [
         'style-loader',
         cssLoader,

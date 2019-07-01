@@ -7,11 +7,11 @@
 
 import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import path from 'path'
+// import path from 'path'
 import is from './is'
-import fs from 'fs'
+// import fs from 'fs'
 import { getPostCssOptions } from './postcss.config'
-const pkg = require('../package.json')
+// const pkg = require('../package.json')
 
 function loadTheme(theme) {
   if (is.String(theme)) {
@@ -44,15 +44,18 @@ exports.load = (config, options, wbpConfig) => {
   const include = options ? options.include : undefined;
 
   const cssLoader = {
-    loader: `css-loader${is.Object(options) && options.target === 'node' ? '/locals' : ''}`,
+    loader: `css-loader${
+      is.Object(options) && options.target === "node" ? "/locals" : ""
+    }`,
     options: {
       sourceMap: is.Object(options) && !!options.sourceMap,
-      modules: true,
-      localIdentName: '[local]',
-      minimize: is.Object(options) && options.target !== 'node' && !!options.minimize || wbpConfig.optimization.minimize,
-      discardComments: { removeAll: true }
+      modules: {
+        localIdentName: '[local]',
+      }
+      // minimize: is.Object(options) && options.target !== 'node' && !!options.minimize || wbpConfig.optimization.minimize,
+      // discardComments: { removeAll: true }
     }
-  }
+  };
   let postcssLoader = {
     loader: 'postcss-loader',
     options: getPostCssOptions(options)
